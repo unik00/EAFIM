@@ -1,7 +1,6 @@
 package eafim;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class CombinationGenerator {
     private static void backtrack(ArrayList<int[]> result, int[] transaction, int i, int[] current, int j){

@@ -2,6 +2,7 @@ package eafim;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.broadcast.Broadcast;
 
 public class Miner {
     int minSup;
@@ -14,21 +15,20 @@ public class Miner {
     }
 
     public void run(){
-        /*
         int k = 1;
         boolean converged = false;
-        int[][] previousFrequent = new int[1][];
+        Broadcast<int[][]> previousFrequent = sparkContext.broadcast(new int[1][]);
         while (!converged){
             int[][] currentFrequents = FrequentFinder.findFrequents(inputRdd, previousFrequent, k, minSup);
             if (currentFrequents.length == 0) converged = true;
             else {
-                if (currentFrequents.length < previousFrequent.length){
+                if (currentFrequents.length < previousFrequent.getValue().length){
                     inputRdd = InputRDDUpdater.updateInputRDD(inputRdd, currentFrequents, k, minSup);
                 }
-                previousFrequent = broadcast(currentFrequents);
+                previousFrequent = sparkContext.broadcast(currentFrequents);
                 k++;
             }
         }
-         */
+
     }
 }
