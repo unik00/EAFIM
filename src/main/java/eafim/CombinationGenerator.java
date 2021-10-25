@@ -15,6 +15,7 @@ public class CombinationGenerator {
 
     /** Generate combinations of length k */
     public static int[][] generate(int[] transaction, int k){
+        if (transaction.length < k) return new int[0][];
         ArrayList<int[]> result = new ArrayList<>();
         backtrack(result, transaction, 0, new int[k], 0);
         int[][] resultArray = new int[result.size()][];

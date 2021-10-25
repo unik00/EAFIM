@@ -1,6 +1,8 @@
+import eafim.Miner;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaSparkContext;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
@@ -12,7 +14,7 @@ class EAFIMConfig {
     String inputFilename;
 
     @Option(names = { "-mc", "--minSupCount" }, description = "min sup count (in integer)")
-    long minSupCount = -1;
+    int minSupCount = -1;
 
     @Override
     public String toString() {
@@ -25,7 +27,7 @@ class EAFIMConfig {
 }
 
 public class Main {
-    public static void main(String[] args) {
+    public static int main(String[] args) {
         EAFIMConfig eafimConfig = new EAFIMConfig();
         new CommandLine(eafimConfig).parseArgs(args);
 
@@ -35,5 +37,8 @@ public class Main {
         if (eafimConfig.isLocal) sparkConf.setMaster("local[*]");
 
         System.out.println(eafimConfig);
+        JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
+        Miner miner = new Miner(eafimConfig.inputFilename, eafimConfig.minSupCount, sparkContext);
+        return miner.run();
     }
 }
