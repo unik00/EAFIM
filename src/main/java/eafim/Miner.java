@@ -7,8 +7,6 @@ import utils.ArrayUtils;
 
 import java.util.Arrays;
 
-import static utils.ArrayUtils.stringToArray;
-
 public class Miner {
     int minSup;
     JavaRDD<int[]> inputRdd;
@@ -23,11 +21,11 @@ public class Miner {
 
     public int run(){
         JavaRDD<String> rawTrans = sparkContext.textFile(inputName, 60).cache();
-        inputRdd = rawTrans.map(ArrayUtils::stringToArray);
+        inputRdd = rawTrans.map(ArrayUtils::stringToSortedArray).cache();
 
         int k = 1;
         boolean converged = false;
-        Broadcast<int[][]> previousFrequent = sparkContext.broadcast(new int[1][]);
+        Broadcast<HashTree> previousFrequent = sparkContext.broadcast(HashTree.build(new int[0][]));
 
         int totalFrequents = 0;
 
@@ -38,13 +36,12 @@ public class Miner {
             totalFrequents += currentFrequents.length;
             if (currentFrequents.length == 0) converged = true;
             else {
-                /*
-                TODO: implement updateInputRDD
-                if (currentFrequents.length < previousFrequent.getValue().length){
-                    inputRdd = InputRDDUpdater.updateInputRDD(inputRdd, currentFrequents, k, minSup);
+                HashTree currentFrequentsTree = HashTree.build(currentFrequents);
+                Broadcast<HashTree> broadcastTree = sparkContext.broadcast(currentFrequentsTree);
+                if (currentFrequents.length < previousFrequent.getValue().numItemsets){
+                    InputRDDUpdater.updateInputRDD(this, broadcastTree, k, minSup);
                 }
-                 */
-                previousFrequent = sparkContext.broadcast(currentFrequents);
+                previousFrequent = broadcastTree;
                 k++;
             }
             System.out.println("Finished mining " + k + " itemsets.");

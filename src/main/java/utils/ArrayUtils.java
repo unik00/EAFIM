@@ -21,7 +21,9 @@ public class ArrayUtils {
         return result;
     }
 
-    public static int[] stringToArray(String s){
-        return Arrays.stream(s.split(" ")).mapToInt(Integer::parseInt).toArray();
+    public static int[] stringToSortedArray(String s){
+        int[] result = Arrays.stream(s.split(" ")).mapToInt(Integer::parseInt).toArray();
+        Arrays.sort(result);
+        return result;
     }
 }
