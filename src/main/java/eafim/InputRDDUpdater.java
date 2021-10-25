@@ -17,7 +17,7 @@ public class InputRDDUpdater {
                                                      Broadcast<HashTree> currentFrequents,
                                                      int k){
         ArrayList<Tuple2<Long, int[]>> result = new ArrayList<>();
-        int[][] C_f = CombinationGenerator.generate(trans, k + 1);
+        int[][] C_f = CombinationGenerator.generate(trans, k);
         for(int[] c: C_f){
             if (currentFrequents.getValue().contains(c)) result.add(new Tuple2<>(offset, c));
         }
