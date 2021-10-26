@@ -1,5 +1,7 @@
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 public class MainTest {
     @Test
     public void testSmall(){
@@ -8,6 +10,17 @@ public class MainTest {
 
     @Test
     public void testChess(){
-        Main.main(new String[]{"-i", "datasets/chess.dat.txt",  "-l", "-mc", "3000"});
+        assertEquals(Main.main(new String[]{"-i", "datasets/chess.dat.txt",  "-l", "-mc", "2700"}), 3134);
     }
+
+    @Test
+    public void testRetail(){
+        Main.main(new String[]{"-i", "datasets/retail.dat",  "-l", "-mc", "100"});
+    }
+
+    @Test
+    public void testMushroom(){
+        Main.main(new String[]{"-i", "datasets/mushroom.dat",  "-l", "-mc", "2500"});
+    }
+
 }
