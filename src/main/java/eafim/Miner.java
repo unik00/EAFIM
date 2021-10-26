@@ -20,7 +20,7 @@ public class Miner {
     }
 
     public int run(){
-        JavaRDD<String> rawTrans = sparkContext.textFile(inputName, 60).cache();
+        JavaRDD<String> rawTrans = sparkContext.textFile(inputName, 1).cache();
         inputRdd = rawTrans.map(ArrayUtils::stringToSortedArray).cache();
 
         int k = 1;
@@ -44,7 +44,7 @@ public class Miner {
                 previousFrequent = broadcastTree;
                 k++;
             }
-            System.out.println("Finished mining " + k + " itemsets.");
+            System.out.println("Finished mining " + (k-1) + " itemsets.");
         }
         System.out.println("Total frequent itemsets: " + totalFrequents);
         return totalFrequents;
