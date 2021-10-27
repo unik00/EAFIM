@@ -39,6 +39,8 @@ public class Main {
         System.out.println(eafimConfig);
         JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
         Miner miner = new Miner(eafimConfig.inputFilename, eafimConfig.minSupCount, sparkContext);
-        return miner.run();
+        int numFrequents = miner.run();
+        sparkContext.close();
+        return numFrequents;
     }
 }
