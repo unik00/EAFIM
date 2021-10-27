@@ -27,7 +27,7 @@ class EAFIMConfig {
 }
 
 public class Main {
-    public static int main(String[] args) {
+    public static int run(String[] args) {
         EAFIMConfig eafimConfig = new EAFIMConfig();
         new CommandLine(eafimConfig).parseArgs(args);
 
@@ -43,4 +43,9 @@ public class Main {
         sparkContext.close();
         return numFrequents;
     }
+
+    public static void main(String[] args){
+        run(args);
+    }
+
 }

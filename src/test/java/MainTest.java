@@ -7,7 +7,7 @@ public class MainTest {
     private void test(int[] minSupCounts, int[] outputs, String file, Integer... limit){
         int n = min(limit.length > 0 ? limit[0] : 1000000000, minSupCounts.length);
         for(int i = 0; i < n; i++) {
-            assertEquals(Main.main(new String[]{"-i", file, "-l", "-mc", Integer.toString(minSupCounts[i])}), outputs[i]);
+            assertEquals(Main.run(new String[]{"-i", file, "-l", "-mc", Integer.toString(minSupCounts[i])}), outputs[i]);
         }
     }
 
