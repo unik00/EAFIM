@@ -2,7 +2,6 @@ package eafim;
 
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.broadcast.Broadcast;
-import scala.Array;
 import scala.Tuple2;
 
 import java.util.ArrayList;
@@ -38,9 +37,13 @@ public class InputRDDUpdater {
 
     public static void updateInputRDD(Miner miner, Broadcast<HashTree> currentFrequents, int k, int minSup){
         JavaPairRDD<Long, int[]> rdd = JavaPairRDD.fromJavaRDD(
-                miner.inputRdd.zipWithIndex().flatMap(pair -> gen(pair._1, pair._2, currentFrequents, k))
+                miner.inputRdd
+                        .zipWithIndex()
+                        .flatMap(pair -> gen(pair._1, pair._2, currentFrequents, k))
         );
 
-        miner.inputRdd = rdd.groupByKey().map(InputRDDUpdater::mergeValuesDistinct);
+        miner.inputRdd = rdd
+                .groupByKey()
+                .map(InputRDDUpdater::mergeValuesDistinct);
     }
 }

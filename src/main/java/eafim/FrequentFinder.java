@@ -18,6 +18,7 @@ public class FrequentFinder {
         HashTree tree = previousFrequentsTree.getValue();
         ArrayList<Tuple2<ArrayList<Integer>, Integer>> result = new ArrayList<>();
         int[][] Ct = CombinationGenerator.generate(trans, k);
+
         for(int[] c: Ct){
             boolean validCandidate = true;
             if (k > 1){
@@ -39,8 +40,15 @@ public class FrequentFinder {
     }
 
     public static int[][] findFrequents(JavaRDD<int[]> inputRdd, Broadcast<HashTree> previousFrequentTree, int k, int minSup){
-        JavaPairRDD<ArrayList<Integer>, Integer> fm = JavaPairRDD.fromJavaRDD(inputRdd.flatMap(trans -> gen(trans, k, previousFrequentTree)));
-        fm = fm.reduceByKey(Integer::sum).filter(pair -> pair._2 >= minSup);
-        return fm.map(pair -> listToPrimitiveArray(pair._1)).collect().toArray(new int[0][]);
+        JavaPairRDD<ArrayList<Integer>, Integer> fm = JavaPairRDD.fromJavaRDD(
+                inputRdd.flatMap(trans -> gen(trans, k, previousFrequentTree))
+        );
+
+        fm = fm.reduceByKey(Integer::sum)
+                .filter(pair -> pair._2 >= minSup);
+
+        return fm.map(pair -> listToPrimitiveArray(pair._1))
+                .collect()
+                .toArray(new int[0][]);
     }
 }
