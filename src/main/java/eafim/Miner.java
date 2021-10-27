@@ -31,16 +31,19 @@ public class Miner {
 
         while (!converged){
             System.out.println("Mining " + k + " itemsets...");
+
+            System.out.println("Finding frequents...");
             int[][] currentFrequents = FrequentFinder.findFrequents(inputRdd, previousFrequent, k, minSup);
+            System.out.println("Finished finding frequents.");
             System.out.println(Arrays.deepToString(currentFrequents));
             totalFrequents += currentFrequents.length;
             if (currentFrequents.length == 0) converged = true;
             else {
                 HashTree currentFrequentsTree = HashTree.build(currentFrequents);
                 Broadcast<HashTree> broadcastTree = sparkContext.broadcast(currentFrequentsTree);
-                if (currentFrequents.length < previousFrequent.getValue().numItemsets){
-                    InputRDDUpdater.updateInputRDD(this, broadcastTree, k, minSup);
-                }
+                System.out.println("Updating Input RDD...");
+                InputRDDUpdater.updateInputRDD(this, broadcastTree, k, minSup);
+                System.out.println("Finished updating Input RDD.");
                 previousFrequent = broadcastTree;
                 k++;
             }
