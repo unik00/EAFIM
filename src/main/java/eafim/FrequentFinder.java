@@ -14,6 +14,12 @@ import static utils.ArrayUtils.listToPrimitiveArray;
 import static utils.ArrayUtils.primitiveArrayToArrayList;
 
 public class FrequentFinder {
+    private static void addToKeyValue(int[] c, HashMap<ArrayList<Integer>, Integer> keyValue){
+        ArrayList<Integer> converted = primitiveArrayToArrayList(c);
+        int newVal = keyValue.getOrDefault(converted, 0) + 1;
+        keyValue.put(converted, newVal);
+    }
+
     private static void gen(int[] trans,
                             int k,
                             Broadcast<HashTree> previousFrequentsTree,
@@ -22,6 +28,10 @@ public class FrequentFinder {
         int[][] Ct = CombinationGenerator.generate(trans, k);
 
         for(int[] c: Ct){
+            if (keyValue.containsKey(primitiveArrayToArrayList(c))){
+                addToKeyValue(c, keyValue);
+                continue;
+            }
             boolean validCandidate = true;
             if (k > 1){
                 int[][] H = CombinationGenerator.generate(c, k - 1);
@@ -33,9 +43,7 @@ public class FrequentFinder {
                 }
             }
             if (validCandidate){
-                ArrayList<Integer> converted = primitiveArrayToArrayList(c);
-                int newVal = keyValue.getOrDefault(converted, 0) + 1;
-                keyValue.put(converted, newVal);
+                addToKeyValue(c, keyValue);
             }
         }
     }
