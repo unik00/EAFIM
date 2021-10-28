@@ -35,7 +35,7 @@ public class Miner {
             System.out.println("Finding frequents...");
             int[][] currentFrequents = FrequentFinder.findFrequents(inputRdd, previousFrequent, k, minSup);
             System.out.println("Finished finding frequents.");
-            System.out.println(Arrays.deepToString(currentFrequents));
+            //System.out.println(Arrays.deepToString(currentFrequents));
             totalFrequents += currentFrequents.length;
             if (currentFrequents.length == 0) converged = true;
             else {

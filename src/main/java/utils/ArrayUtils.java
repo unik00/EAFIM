@@ -21,9 +21,22 @@ public class ArrayUtils {
         return result;
     }
 
+    public static int[] stringToArray(String s){
+        return Arrays.stream(s.split(" ")).mapToInt(Integer::parseInt).toArray();
+    }
+
     public static int[] stringToSortedArray(String s){
-        int[] result = Arrays.stream(s.split(" ")).mapToInt(Integer::parseInt).toArray();
+        int[] result = stringToArray(s);
         Arrays.sort(result);
         return result;
     }
+
+    public static String arrayToString(int[] c){
+        StringBuilder result = new StringBuilder();
+        for(int i = 0; i < c.length - 1; i++) result.append(c[i]).append(" ");
+        result.append(c[c.length - 1]);
+        return result.toString();
+    }
+
+
 }

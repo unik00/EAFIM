@@ -8,15 +8,14 @@ import scala.Tuple2;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import static utils.ArrayUtils.listToPrimitiveArray;
-import static utils.ArrayUtils.primitiveArrayToArrayList;
+import static utils.ArrayUtils.*;
 
 public class FrequentFinder {
-    private static Iterator<Tuple2<ArrayList<Integer>, Integer>> gen(int[] trans,
+    private static Iterator<Tuple2<String, Integer>> gen(int[] trans,
                                                                 int k,
                                                                 Broadcast<HashTree> previousFrequentsTree){
         HashTree tree = previousFrequentsTree.getValue();
-        ArrayList<Tuple2<ArrayList<Integer>, Integer>> result = new ArrayList<>();
+        ArrayList<Tuple2<String, Integer>> result = new ArrayList<>();
         int[][] Ct = CombinationGenerator.generate(trans, k);
 
         for(int[] c: Ct){
@@ -33,21 +32,25 @@ public class FrequentFinder {
             }
             if (validCandidate){
                 // convert to ArrayList for reduceByKey (cannot apply reduceByKey on primitive array)
-                result.add(new Tuple2<>(primitiveArrayToArrayList(c), 1));
+                result.add(new Tuple2<>(arrayToString(c), 1));
             }
         }
         return result.iterator();
     }
 
     public static int[][] findFrequents(JavaRDD<int[]> inputRdd, Broadcast<HashTree> previousFrequentTree, int k, int minSup){
-        JavaPairRDD<ArrayList<Integer>, Integer> fm = JavaPairRDD.fromJavaRDD(
+        JavaPairRDD<String, Integer> fm = JavaPairRDD.fromJavaRDD(
                 inputRdd.flatMap(trans -> gen(trans, k, previousFrequentTree)).cache()
         );
 
-        fm = fm.reduceByKey(Integer::sum)
-                .filter(pair -> pair._2 >= minSup).cache();
+        fm = fm.reduceByKey(Integer::sum).cache();
 
-        return fm.map(pair -> listToPrimitiveArray(pair._1)).cache()
+        System.out.println(k + ", num key before filter: " + fm.count());
+
+        fm = fm.filter(pair -> pair._2 >= minSup).cache();
+        System.out.println(k + ", num key after filter: " + fm.count());
+
+        return fm.map(pair -> stringToArray(pair._1)).cache()
                 .collect()
                 .toArray(new int[0][]);
     }

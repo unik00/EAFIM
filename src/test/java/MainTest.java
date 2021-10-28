@@ -13,9 +13,9 @@ public class MainTest {
 
     @Test
     public void testChess(){
-        int[] minSupCounts = new int[]{3000, 2700, 2500, 2000};
-        int[] outputs = new int[]{155, 3134, 11493, 166580};
-        test(minSupCounts, outputs, "datasets/chess.dat.txt", 3);
+        int[] minSupCounts = new int[]{2700, 3000, 2700, 2500, 2000};
+        int[] outputs = new int[]{3134, 155, 3134, 11493, 166580};
+        test(minSupCounts, outputs, "datasets/chess.dat.txt", 1);
     }
 
     @Test
