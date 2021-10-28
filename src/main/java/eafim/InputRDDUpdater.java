@@ -39,11 +39,11 @@ public class InputRDDUpdater {
         JavaPairRDD<Long, int[]> rdd = JavaPairRDD.fromJavaRDD(
                 miner.inputRdd
                         .zipWithIndex()
-                        .flatMap(pair -> gen(pair._1, pair._2, currentFrequents, k))
+                        .flatMap(pair -> gen(pair._1, pair._2, currentFrequents, k)).cache()
         );
 
         miner.inputRdd = rdd
                 .groupByKey()
-                .map(InputRDDUpdater::mergeValuesDistinct);
+                .map(InputRDDUpdater::mergeValuesDistinct).cache();
     }
 }

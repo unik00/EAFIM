@@ -40,13 +40,11 @@ public class MainTest {
         test(inputs, outputs, "datasets/mushroom.dat");
     }
 
-    /*
-    TODO: increase stack size (Stack overflow)
+//    TODO: increase stack size (Stack overflow)
     @Test
     public void testWebdocs(){
-        int[] inputs = new int[]{400000};
+        int[] inputs = new int[]{1000000};
         int[] outputs = new int[]{2365};
         test(inputs, outputs, "datasets/webdocs.dat");
     }
-     */
 }

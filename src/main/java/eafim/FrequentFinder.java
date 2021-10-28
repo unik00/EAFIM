@@ -41,13 +41,13 @@ public class FrequentFinder {
 
     public static int[][] findFrequents(JavaRDD<int[]> inputRdd, Broadcast<HashTree> previousFrequentTree, int k, int minSup){
         JavaPairRDD<ArrayList<Integer>, Integer> fm = JavaPairRDD.fromJavaRDD(
-                inputRdd.flatMap(trans -> gen(trans, k, previousFrequentTree))
+                inputRdd.flatMap(trans -> gen(trans, k, previousFrequentTree)).cache()
         );
 
         fm = fm.reduceByKey(Integer::sum)
-                .filter(pair -> pair._2 >= minSup);
+                .filter(pair -> pair._2 >= minSup).cache();
 
-        return fm.map(pair -> listToPrimitiveArray(pair._1))
+        return fm.map(pair -> listToPrimitiveArray(pair._1)).cache()
                 .collect()
                 .toArray(new int[0][]);
     }
