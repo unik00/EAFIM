@@ -11,6 +11,10 @@ public class CombinationGeneratorTest {
         assertEquals(CombinationGenerator.generate(new int[]{1, 2}, 2).length, 1);
         assertEquals(CombinationGenerator.generate(new int[]{1, 2, 3}, 1).length, 3);        assertEquals(CombinationGenerator.generate(new int[]{1, 2, 3}, 1).length, 3);
         assertEquals(CombinationGenerator.generate(new int[]{1, 2, 3}, 4).length, 0);
+    }
+    @Test
+    public void testGenerate2(){
+        assertEquals(CombinationGenerator.generate(new int[10000], 1).length, 10000);
 
     }
 
