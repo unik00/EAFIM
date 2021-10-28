@@ -18,7 +18,7 @@ public class Miner {
     }
 
     public int run(){
-        JavaRDD<String> rawTrans = sparkContext.textFile(inputName, 1).cache();
+        JavaRDD<String> rawTrans = sparkContext.textFile(inputName, 60).cache();
         inputRdd = rawTrans.map(ArrayUtils::stringToSortedArray).cache();
 
         int k = 1;
