@@ -5,8 +5,6 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.broadcast.Broadcast;
 import utils.ArrayUtils;
 
-import java.util.Arrays;
-
 public class Miner {
     int minSup;
     JavaRDD<int[]> inputRdd;
@@ -35,7 +33,7 @@ public class Miner {
             System.out.println("Finding frequents...");
             int[][] currentFrequents = FrequentFinder.findFrequents(inputRdd, previousFrequent, k, minSup);
             System.out.println("Finished finding frequents.");
-            System.out.println(Arrays.deepToString(currentFrequents));
+            System.out.println(currentFrequents.length + " frequent itemsets.");
             totalFrequents += currentFrequents.length;
             if (currentFrequents.length == 0) converged = true;
             else {
