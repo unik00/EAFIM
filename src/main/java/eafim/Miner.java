@@ -39,9 +39,10 @@ public class Miner {
             else {
                 HashTree currentFrequentsTree = HashTree.build(currentFrequents);
                 Broadcast<HashTree> broadcastTree = sparkContext.broadcast(currentFrequentsTree);
-                System.out.println("Updating Input RDD...");
-                InputRDDUpdater.updateInputRDD(this, broadcastTree, k, minSup);
-                System.out.println("Finished updating Input RDD.");
+                if (k == 1 || currentFrequentsTree.numItemsets < previousFrequent.getValue().numItemsets) {
+                    System.out.println("Updating Input RDD...");
+                    InputRDDUpdater.updateInputRDD(this, broadcastTree, k, minSup);
+                }
                 previousFrequent = broadcastTree;
                 k++;
             }
