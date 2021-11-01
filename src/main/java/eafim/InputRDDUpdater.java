@@ -35,7 +35,7 @@ public class InputRDDUpdater {
         return listToPrimitiveArray(result);
     }
 
-    public static void updateInputRDD(Miner miner, Broadcast<HashTree> currentFrequents, int k, int minSup){
+    public static void updateInputRDD(Miner miner, Broadcast<HashTree> currentFrequents, int k){
         JavaPairRDD<Long, int[]> rdd = JavaPairRDD.fromJavaRDD(
                 miner.inputRdd
                         .zipWithIndex()
