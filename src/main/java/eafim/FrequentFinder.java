@@ -25,7 +25,8 @@ public class FrequentFinder {
                             Broadcast<HashTree> previousFrequentsTree,
                             HashMap<ArrayList<Integer>, Integer> keyValue){
         HashTree tree = previousFrequentsTree.getValue();
-        int[][] Ct = CombinationGenerator.generate(trans, k);
+        int[][] Ct = CombinationGenerator.generate(trans, k, previousFrequentsTree.getValue());
+        //System.out.println("k= " + k +", num combinations for len " + trans.length + ": " + Ct.length);
 
         for(int[] c: Ct){
             if (keyValue.containsKey(primitiveArrayToArrayList(c))){

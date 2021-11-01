@@ -13,9 +13,9 @@ public class MainTest {
 
     @Test
     public void testChess(){
-        int[] minSupCounts = new int[]{3000, 2700, 2500, 2000};
-        int[] outputs = new int[]{155, 3134, 11493, 166580};
-        test(minSupCounts, outputs, "datasets/chess.dat.txt", 3);
+        int[] minSupCounts = new int[]{2500, 3000, 2700, 2500, 2000};
+        int[] outputs = new int[]{11493, 155, 3134, 11493, 166580};
+        test(minSupCounts, outputs, "datasets/chess.dat.txt", 1);
     }
 
     @Test
@@ -35,7 +35,14 @@ public class MainTest {
 
     @Test
     public void testMushroom(){
-        int[] inputs = new int[]{2500};
+        int[] inputs = new int[]{500};
+        int[] outputs = new int[]{2365};
+        test(inputs, outputs, "datasets/mushroom.dat");
+    }
+
+    @Test
+    public void testSmall(){
+        int[] inputs = new int[]{500};
         int[] outputs = new int[]{2365};
         test(inputs, outputs, "datasets/mushroom.dat");
     }

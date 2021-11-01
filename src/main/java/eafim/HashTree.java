@@ -8,7 +8,7 @@ import static utils.ArrayUtils.primitiveArrayToArrayList;
 
 public class HashTree implements Serializable {
     // TODO: implement proper HashTree. This is just a quick prototype
-    HashSet<ArrayList<Integer>> set = new HashSet<>();
+    public HashSet<ArrayList<Integer>> set = new HashSet<>();
     public int numItemsets;
 
     public static HashTree build(int[][] itemsets){
