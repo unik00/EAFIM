@@ -1,49 +1,27 @@
 package eafim;
 
-import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.broadcast.Broadcast;
-import scala.Tuple2;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import static utils.ArrayUtils.listToPrimitiveArray;
-
 public class InputRDDUpdater {
-    private static Iterator<Tuple2<Long, int[]>> gen(int[] trans,
-                                                     long offset,
-                                                     Broadcast<HashTree> currentFrequents,
-                                                     int k){
-        ArrayList<Tuple2<Long, int[]>> result = new ArrayList<>();
+    private static int[] gen(int[] trans, Broadcast<HashTree> currentFrequents, int k){
+        TreeSet<Integer> resultSet = new TreeSet<>();
         int[][] C_f = CombinationGenerator.generate(trans, k);
         for(int[] c: C_f){
-            if (currentFrequents.getValue().contains(c)) result.add(new Tuple2<>(offset, c));
+            if (currentFrequents.getValue().contains(c)) {
+                for(int item: c) resultSet.add(item);
+            }
         }
-        return result.iterator();
-    }
-
-    /**
-     * A merge sort can be employed here since elements in every int[] are sorted
-     */
-    private static int[] mergeValuesDistinct(Tuple2<Long, Iterable<int[]>> keyValues){
-        TreeSet<Integer> s = new TreeSet<>();
-        for(int[] itemset: keyValues._2){
-            for(int item: itemset) s.add(item);
-        }
-        ArrayList<Integer> result = new ArrayList<>(s);
-        return listToPrimitiveArray(result);
+        Iterator<Integer> it = resultSet.iterator();
+        int[] result = new int[resultSet.size()];
+        int i = 0;
+        while (it.hasNext()) result[i++] = it.next();
+        return result;
     }
 
     public static void updateInputRDD(Miner miner, Broadcast<HashTree> currentFrequents, int k){
-        JavaPairRDD<Long, int[]> rdd = JavaPairRDD.fromJavaRDD(
-                miner.inputRdd
-                        .zipWithIndex()
-                        .flatMap(pair -> gen(pair._1, pair._2, currentFrequents, k))
-        );
-
-        miner.inputRdd = rdd
-                .groupByKey()
-                .map(InputRDDUpdater::mergeValuesDistinct);
+        miner.inputRdd = miner.inputRdd.map(trans -> gen(trans, currentFrequents, k));
     }
 }
