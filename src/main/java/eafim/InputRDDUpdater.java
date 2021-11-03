@@ -37,6 +37,6 @@ public class InputRDDUpdater {
 
     public static void updateInputRDD(Miner miner, Broadcast<HashTree> currentFrequents, int k,
                                       Broadcast<HashMap<Integer, Integer>> singletonOrder){
-        miner.inputRdd = miner.inputRdd.map(trans -> gen(trans, currentFrequents, k, singletonOrder));
+        miner.inputRdd = miner.inputRdd.map(trans -> gen(trans, currentFrequents, k, singletonOrder)).cache();
     }
 }
