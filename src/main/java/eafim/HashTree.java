@@ -17,7 +17,7 @@ public class HashTree implements Serializable {
             this.numChildren = numChildren;
         }
     }
-    public static int MAX_DEPTH = 5;
+    public static int MAX_DEPTH = 150;
     public int numItemsets;
     public int depth = 7;
     private int hashCode = 10;
@@ -31,7 +31,7 @@ public class HashTree implements Serializable {
         HashTree result = new HashTree();
         if (itemsets.length > 0) {
             result.depth = min(itemsets[0].length, MAX_DEPTH);
-            result.hashCode = 100000;
+            result.hashCode = 100;
             result.root = new Node(result.hashCode);
         }
         for(int[] s: itemsets) result.insert(s);
