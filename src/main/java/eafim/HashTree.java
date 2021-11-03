@@ -31,8 +31,7 @@ public class HashTree implements Serializable {
         HashTree result = new HashTree();
         if (itemsets.length > 0) {
             result.depth = min(itemsets[0].length, MAX_DEPTH);
-            result.hashCode = max(result.depth, itemsets.length / result.depth);
-//            result.hashCode = result.depth;
+            result.hashCode = 100000;
             result.root = new Node(result.hashCode);
         }
         for(int[] s: itemsets) result.insert(s);
