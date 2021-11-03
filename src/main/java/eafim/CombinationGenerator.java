@@ -26,13 +26,6 @@ public class CombinationGenerator {
 
             backtrack(result, transaction, i + 1, current, j + 1, previousFrequent);
         }
-//        else {
-//            System.out.print("skipped ");
-//            System.out.println(Arrays.toString(Arrays.copyOf(current, current.length - 1)));
-//            System.out.println(previousFrequent[0].contains(Arrays.copyOf(current, current.length - 1)));
-//            System.out.println(j == current.length - 2);
-//            System.out.println(previousFrequent[0].set);
-//        }
 
         // not pick current[j]
         if (current.length - j < transaction.length - i) {

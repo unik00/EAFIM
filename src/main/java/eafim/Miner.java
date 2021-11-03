@@ -5,6 +5,8 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.broadcast.Broadcast;
 import utils.ArrayUtils;
 
+import java.util.Arrays;
+
 public class Miner {
     int minSup;
     JavaRDD<int[]> inputRdd;

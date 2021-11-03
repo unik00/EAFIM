@@ -7,7 +7,6 @@ import scala.Tuple2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import static utils.ArrayUtils.listToPrimitiveArray;
