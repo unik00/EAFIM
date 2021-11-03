@@ -6,30 +6,21 @@ import org.apache.spark.broadcast.Broadcast;
 import scala.Tuple2;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import static utils.ArrayUtils.listToPrimitiveArray;
-import static utils.ArrayUtils.primitiveArrayToArrayList;
 
 public class FrequentFinder {
-    private static void addToKeyValue(int[] c, HashMap<ArrayList<Integer>, Integer> keyValue){
-        ArrayList<Integer> converted = primitiveArrayToArrayList(c);
-        int newVal = keyValue.getOrDefault(converted, 0) + 1;
-        keyValue.put(converted, newVal);
-    }
-
     private static void gen(int[] trans,
                             int k,
                             Broadcast<HashTree> previousFrequentsTree,
-                            HashMap<ArrayList<Integer>, Integer> keyValue){
+                            HashTree keyValue){
         HashTree tree = previousFrequentsTree.getValue();
         int[][] Ct = CombinationGenerator.generate(trans, k, previousFrequentsTree.getValue());
         //System.out.println("k= " + k +", num combinations for len " + trans.length + ": " + Ct.length);
 
         for(int[] c: Ct){
-            if (keyValue.containsKey(primitiveArrayToArrayList(c))){
-                addToKeyValue(c, keyValue);
+            if (keyValue.contains(c)){
+                keyValue.insert(c, true);
                 continue;
             }
             boolean validCandidate = true;
@@ -43,7 +34,7 @@ public class FrequentFinder {
                 }
             }
             if (validCandidate){
-                addToKeyValue(c, keyValue);
+                keyValue.insert(c, true);
             }
         }
     }
@@ -52,17 +43,12 @@ public class FrequentFinder {
         JavaPairRDD<ArrayList<Integer>, Integer> fm = JavaPairRDD.fromJavaRDD(
                 inputRdd.mapPartitions(
                         iterator -> {
-                            HashMap<ArrayList<Integer>, Integer> keyValue = new HashMap<>();
+                            HashTree keyValue = new HashTree();
                             while (iterator.hasNext()) {
                                 int[] trans = iterator.next();
                                 gen(trans, k, previousFrequentTree, keyValue);
                             }
-                            ArrayList<Tuple2<ArrayList<Integer>, Integer>> result = new ArrayList<>();
-                            for(Map.Entry<ArrayList<Integer>, Integer> res: keyValue.entrySet()){
-                                ArrayList<Integer> key = res.getKey();
-                                Integer value = res.getValue();
-                                result.add(new Tuple2<>(key, value));
-                            }
+                            ArrayList<Tuple2<ArrayList<Integer>, Integer>> result = keyValue.getAll();
                             return result.iterator();
                         }
                 )
