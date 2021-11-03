@@ -5,6 +5,9 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.broadcast.Broadcast;
 import utils.ArrayUtils;
 
+import java.util.Arrays;
+import java.util.HashMap;
+
 public class Miner {
     int minSup;
     JavaRDD<int[]> inputRdd;
@@ -26,12 +29,13 @@ public class Miner {
         Broadcast<HashTree> previousFrequent = sparkContext.broadcast(HashTree.build(new int[0][]));
 
         int totalFrequents = 0;
+        HashMap<Integer, Integer> singletonOrder = new HashMap<>();
 
         while (!converged){
             System.out.println("Mining " + k + " itemsets...");
 
             System.out.println("Finding frequents...");
-            int[][] currentFrequents = FrequentFinder.findFrequents(inputRdd, previousFrequent, k, minSup);
+            int[][] currentFrequents = FrequentFinder.findFrequents(inputRdd, previousFrequent, k, minSup, singletonOrder);
             System.out.println("Finished finding frequents.");
             System.out.println(currentFrequents.length + " frequent itemsets.");
             totalFrequents += currentFrequents.length;
@@ -41,7 +45,7 @@ public class Miner {
                 Broadcast<HashTree> broadcastTree = sparkContext.broadcast(currentFrequentsTree);
                 if (k == 1 || currentFrequentsTree.numItemsets < previousFrequent.getValue().numItemsets) {
                     System.out.println("Updating Input RDD...");
-                    InputRDDUpdater.updateInputRDD(this, broadcastTree, k);
+                    InputRDDUpdater.updateInputRDD(this, broadcastTree, k, sparkContext.broadcast(singletonOrder));
                 }
                 previousFrequent = broadcastTree;
                 k++;

@@ -26,4 +26,9 @@ public class ArrayUtils {
         Arrays.sort(result);
         return result;
     }
+
+    public static int[] integerToPrimitive(Integer[] arr){
+        return Arrays.stream(arr).mapToInt(Integer::intValue).toArray();
+    }
+
 }
