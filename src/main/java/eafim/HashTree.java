@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class HashTree implements Serializable {
     static class Node implements Serializable {
@@ -14,10 +15,9 @@ public class HashTree implements Serializable {
 
         Node(int numChildren){
             this.numChildren = numChildren;
-            childrenArray = new Node[numChildren];
         }
     }
-
+    public static int MAX_DEPTH = 5;
     public int numItemsets;
     public int depth = 7;
     private int hashCode = 10;
@@ -30,8 +30,9 @@ public class HashTree implements Serializable {
     public static HashTree build(int[][] itemsets){
         HashTree result = new HashTree();
         if (itemsets.length > 0) {
-            result.depth = itemsets[0].length;
+            result.depth = min(itemsets[0].length, MAX_DEPTH);
             result.hashCode = max(result.depth, itemsets.length / result.depth);
+//            result.hashCode = result.depth;
             result.root = new Node(result.hashCode);
         }
         for(int[] s: itemsets) result.insert(s);
@@ -44,7 +45,7 @@ public class HashTree implements Serializable {
     }
 
     public void insert(Node u, int[] c, int i){
-        if (i == c.length) {
+        if (i == c.length || i == MAX_DEPTH - 1) {
             if (u.bucket == null) u.bucket = new ArrayList<>();
             u.bucket.add(c);
             return;
@@ -55,7 +56,7 @@ public class HashTree implements Serializable {
     }
 
     public boolean find(Node u, int[] c, int i){
-        if (i == c.length) {
+        if (i == c.length || i == MAX_DEPTH - 1) {
             for(int[] t: u.bucket){
                 if (Arrays.equals(t, c)) return true;
             }
