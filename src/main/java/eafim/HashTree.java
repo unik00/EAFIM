@@ -1,12 +1,8 @@
 package eafim;
 
-import scala.Tuple2;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import static utils.ArrayUtils.primitiveArrayToArrayList;
 
 public class HashTree implements Serializable {
     static class Node implements Serializable {

@@ -1,7 +1,6 @@
 package eafim;
 
 import org.apache.spark.api.java.JavaRDD;
-import org.hamcrest.internal.ArrayIterator;
 import scala.Tuple2;
 import utils.ArrayUtils;
 
@@ -51,7 +50,8 @@ public class FrequentFinder {
 
         JavaRDD<int[]> fm = inputRdd.mapPartitions(
                 iterator -> {
-                    // We don't broadcast generated candidates. Only broadcast frequents, and then re-generate candidates.
+                    // EAFIM doesn't broadcast generated candidates. It only broadcasts frequent itemsets,
+                    // and then it re-generates candidates in each partition.
                     int[][] generatedCandidates;
                     if (k > 1) generatedCandidates = CandidateGenerator.gen(previousFrequent);
                     else {
