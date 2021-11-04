@@ -84,6 +84,7 @@ public class HashTree implements Serializable {
         return this.find(this.root, c, 0);
     }
 
+    /*
     private void dfs(Node u, ArrayList<Tuple2<ArrayList<Integer>, Integer>> result){
         if (u.bucket != null){
             for(int i = 0; i < u.bucket.size(); i++){
@@ -103,4 +104,5 @@ public class HashTree implements Serializable {
         dfs(root, result);
         return result;
     }
+     */
 }

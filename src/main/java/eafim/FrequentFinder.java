@@ -1,29 +1,32 @@
 package eafim;
 
-import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
+import org.hamcrest.internal.ArrayIterator;
 import scala.Tuple2;
+import utils.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static utils.ArrayUtils.listToPrimitiveArray;
-
 public class FrequentFinder {
     /**
-     * Returns a support array
+     * It will increase supports array for any candidates that match transaction
      */
-    private static int[] gen(int[] trans,
+    private static void gen(int[] trans,
                             int k,
-                            HashTree candidateTree){
-        int[][] Ct = CombinationGenerator.generate(trans, k, candidateTree);
-        //System.out.println("k= " + k +", num combinations for len " + trans.length + ": " + Ct.length);
-
-        for(int[] c: Ct){
-
+                            HashTree candidateTree,
+                             int[] supports){
+        int[] indexes = CombinationGenerator.generate(trans, k, candidateTree);
+        for(int i: indexes){
+            supports[i]++;
         }
+    }
 
+    private static int[] mergeSupports(int[] a, int[] b){
+        int[] c = new int[a.length];
+        for(int i = 0; i < a.length; i++) c[i] = a[i] + b[i];
+        return c;
     }
 
     public static int[][] findFrequents(JavaRDD<int[]> inputRdd,
@@ -31,33 +34,53 @@ public class FrequentFinder {
                                         int k,
                                         int minSup,
                                         HashMap<Integer, Integer> singletonOrder){
-        JavaPairRDD<ArrayList<Integer>, Integer> fm = JavaPairRDD.fromJavaRDD(
-                inputRdd.mapPartitions(
-                        iterator -> {
-                            int[][] generatedCandidates = CandidateGenerator.gen(previousFrequent);
-                            HashTree candidateTree = HashTree.build(generatedCandidates);
-                            while (iterator.hasNext()) {
-                                int[] trans = iterator.next();
-                                gen(trans, k, candidateTree);
-                            }
-                            ArrayList<Tuple2<ArrayList<Integer>, Integer>> result = keyValue.getAll();
-                            return result.iterator();
-                        }
-                )
-        );
 
-        fm = fm.reduceByKey(Integer::sum)
-                .filter(pair -> pair._2 >= minSup);
-
+        int[][] distinctItems = new int[0][];
         if (k == 1){
-            List<Tuple2<Integer, Integer>> f1List = fm.map(tuple -> new Tuple2<>(tuple._1.get(0), tuple._2)).collect();
-            for (Tuple2<Integer, Integer> integerIntegerTuple2 : f1List) {
-                singletonOrder.put(integerIntegerTuple2._1, integerIntegerTuple2._2);
+            List<Integer> items = inputRdd.flatMap(arr -> ArrayUtils.primitiveArrayToArrayList(arr).iterator())
+                    .mapToPair(word -> new Tuple2<>(word, 1))
+                    .reduceByKey(Integer::sum)
+                    .map(pair -> pair._1)
+                    .collect();
+            distinctItems = new int[items.size()][];
+            int i = 0;
+            for(Integer item: items) distinctItems[i++] = new int[]{item};
+        }
+
+        int[][] candidatesLengthOne = distinctItems; // for k = 1
+
+        JavaRDD<int[]> fm = inputRdd.mapPartitions(
+                iterator -> {
+                    // We don't broadcast generated candidates. Only broadcast frequents, and then re-generate candidates.
+                    int[][] generatedCandidates;
+                    if (k > 1) generatedCandidates = CandidateGenerator.gen(previousFrequent);
+                    else {
+                        generatedCandidates = candidatesLengthOne;
+                    }
+                    HashTree candidateTree = HashTree.build(generatedCandidates);
+                    int[] supports = new int[generatedCandidates.length];
+                    while (iterator.hasNext()) {
+                        int[] trans = iterator.next();
+                        gen(trans, k, candidateTree, supports);
+                    }
+                    ArrayList<int[]> result = new ArrayList<>();
+                    result.add(supports);
+                    return result.iterator();
+                });
+
+        int[] supports = fm.reduce(FrequentFinder::mergeSupports);
+
+        ArrayList<int[]> newFrequents = new ArrayList<>();
+
+        int[][] generatedCandidates = CandidateGenerator.gen(previousFrequent);
+
+        for(int i = 0; i < supports.length; i++) if (supports[i] >= minSup) {
+            newFrequents.add(generatedCandidates[i]);
+            if (k == 1){
+                singletonOrder.put(generatedCandidates[i][0], supports[i]);
             }
         }
 
-        return fm.map(pair -> listToPrimitiveArray(pair._1))
-                .collect()
-                .toArray(new int[0][]);
+        return newFrequents.toArray(new int[0][]);
     }
 }
