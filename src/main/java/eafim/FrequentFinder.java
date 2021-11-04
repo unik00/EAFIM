@@ -15,7 +15,7 @@ public class FrequentFinder {
     private static void gen(int[] trans,
                             int k,
                             HashTree candidateTree,
-                             int[] supports){
+                            int[] supports){
         int[] indexes = CombinationGenerator.generate(trans, k, candidateTree);
         for(int i: indexes){
             supports[i]++;

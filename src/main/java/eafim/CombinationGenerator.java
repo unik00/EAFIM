@@ -1,10 +1,12 @@
 package eafim;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CombinationGenerator {
     /**
-     * Generate all combinations of length k that is present in candidateTree
+     * Generate all combinations of length k that is present in candidateTree.
+     * Append indexes of combinations (used to build the candidate tree) instead of itemsets itself.
      */
     private static void backtrack(ArrayList<Integer> result,
                                   int[] transaction,
@@ -14,7 +16,14 @@ public class CombinationGenerator {
                                   HashTree tree,
                                   HashTree.Node u){
         if (j == current.length) {
-            result.add(current.clone());
+            // now we search in u bucket to see if current matches one of the candidates in its bucket
+            for(int t = 0; t < u.bucketOfIndexes.size();i ++){
+                int[] c = tree.originalItemsets[u.bucketOfIndexes.get(i)];
+                if (Arrays.equals(current, c)){
+                    result.add(u.bucketOfIndexes.get(i));
+                    return;
+                }
+            }
             return;
         }
 
