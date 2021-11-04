@@ -17,10 +17,10 @@ public class CombinationGenerator {
                                   HashTree.Node u){
         if (j == current.length) {
             // now we search in u bucket to see if current matches one of the candidates in its bucket
-            for(int t = 0; t < u.bucketOfIndexes.size();i ++){
-                int[] c = tree.originalItemsets[u.bucketOfIndexes.get(i)];
+            for(int t = 0; t < u.bucketOfIndexes.size(); t++){
+                int[] c = tree.originalItemsets[u.bucketOfIndexes.get(t)];
                 if (Arrays.equals(current, c)){
-                    result.add(u.bucketOfIndexes.get(i));
+                    result.add(u.bucketOfIndexes.get(t));
                     return;
                 }
             }

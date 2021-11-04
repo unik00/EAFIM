@@ -47,7 +47,6 @@ public class FrequentFinder {
         }
 
         int[][] candidatesLengthOne = distinctItems; // for k = 1
-
         JavaRDD<int[]> fm = inputRdd.mapPartitions(
                 iterator -> {
                     // EAFIM doesn't broadcast generated candidates. It only broadcasts frequent itemsets,
@@ -72,7 +71,9 @@ public class FrequentFinder {
 
         ArrayList<int[]> newFrequents = new ArrayList<>();
 
-        int[][] generatedCandidates = CandidateGenerator.gen(previousFrequent);
+        int[][] generatedCandidates;
+        if (k > 1) generatedCandidates = CandidateGenerator.gen(previousFrequent);
+        else generatedCandidates = candidatesLengthOne;
 
         for(int i = 0; i < supports.length; i++) if (supports[i] >= minSup) {
             newFrequents.add(generatedCandidates[i]);
