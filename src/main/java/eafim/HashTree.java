@@ -1,77 +1,57 @@
 package eafim;
 
-import scala.Tuple2;
-
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
-
-import static java.lang.Math.*;
-import static utils.ArrayUtils.primitiveArrayToArrayList;
 
 public class HashTree implements Serializable {
     static class Node implements Serializable {
         public int numChildren;
         Node[] childrenArray;
-        ArrayList<int[]> bucket;
-        ArrayList<Integer> counts;
-
+        ArrayList<Integer> bucketOfIndexes;
         Node(int numChildren){
             this.numChildren = numChildren;
         }
     }
-    public static int MAX_DEPTH = 150;
+    public int[][] originalItemsets;
     public int numItemsets;
-    private int hashCode = 100;
-    public Node root = new Node(100);
+    private final int hashCode = 100;
+    public Node root = new Node(hashCode);
 
-    private int hash(int x){
+    public int hash(int x){
         return x % hashCode;
     }
 
     public static HashTree build(int[][] itemsets){
         HashTree result = new HashTree();
         if (itemsets.length > 0) {
-            result.hashCode = 100;
             result.root = new Node(result.hashCode);
         }
-        for(int[] s: itemsets) result.insert(s, false);
+        result.originalItemsets = itemsets;
+        for(int i = 0; i < itemsets.length; i++) result.insert(i);
         result.numItemsets = itemsets.length;
         return result;
     }
 
-    public void insert(int[] c, boolean aggregate){
-        insert(this.root, c, 0, aggregate);
+    public void insert(int c){
+        insert(this.root, c, 0);
     }
 
-    public void insert(Node u, int[] c, int i, boolean aggregate){
-        if (i == c.length || i == MAX_DEPTH - 1) {
-            if (u.bucket == null) u.bucket = new ArrayList<>();
-            if (!aggregate) u.bucket.add(c);
-            else {
-                boolean found = false;
-                for(int j = 0; j < u.bucket.size(); j++) {
-                    if (Arrays.equals(u.bucket.get(j), c)){
-                        found = true;
-                        u.counts.set(j, u.counts.get(j) + 1);
-                        break;
-                    }
-                }
-                if (!found) {
-                    if (u.counts == null) u.counts = new ArrayList<>();
-                    u.bucket.add(c);
-                    u.counts.add(1);
-                }
-            }
+    public void insert(Node u, int c, int i){
+        if (i == originalItemsets[c].length) {
+            if (u.bucketOfIndexes == null) u.bucketOfIndexes = new ArrayList<>();
+            u.bucketOfIndexes.add(c);
             return;
         }
         if (u.childrenArray == null) u.childrenArray = new Node[hashCode];
-        if (u.childrenArray[hash(c[i])] == null) u.childrenArray[hash(c[i])] = new Node(hashCode);
-        insert(u.childrenArray[hash(c[i])], c, i + 1, aggregate);
+        if (u.childrenArray[hash(originalItemsets[c][i])] == null) {
+            u.childrenArray[hash(originalItemsets[c][i])] = new Node(hashCode);
+        }
+        insert(u.childrenArray[hash(originalItemsets[c][i])], c, i + 1);
     }
 
+    /*
     public boolean find(Node u, int[] c, int i){
-        if (i == c.length || i == MAX_DEPTH - 1) {
+        if (i == c.length) {
             for(int[] t: u.bucket){
                 if (Arrays.equals(t, c)) return true;
             }
@@ -105,4 +85,5 @@ public class HashTree implements Serializable {
         dfs(root, result);
         return result;
     }
+     */
 }

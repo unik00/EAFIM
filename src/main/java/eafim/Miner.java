@@ -2,7 +2,6 @@ package eafim;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.broadcast.Broadcast;
 import utils.ArrayUtils;
 
 import java.util.Arrays;
@@ -21,12 +20,12 @@ public class Miner {
     }
 
     public int run(){
-        JavaRDD<String> rawTrans = sparkContext.textFile(inputName, 60).cache();
+        JavaRDD<String> rawTrans = sparkContext.textFile(inputName, 1).cache();
         inputRdd = rawTrans.map(ArrayUtils::stringToSortedArray).cache();
 
         int k = 1;
         boolean converged = false;
-        Broadcast<HashTree> previousFrequent = sparkContext.broadcast(HashTree.build(new int[0][]));
+        int[][] previousFrequent = new int[0][];
 
         int totalFrequents = 0;
         HashMap<Integer, Integer> singletonOrder = new HashMap<>();
@@ -36,18 +35,20 @@ public class Miner {
 
             System.out.println("Finding frequents...");
             int[][] currentFrequents = FrequentFinder.findFrequents(inputRdd, previousFrequent, k, minSup, singletonOrder);
-            System.out.println("Finished finding frequents.");
             System.out.println(currentFrequents.length + " frequent itemsets.");
+            //System.out.println(Arrays.deepToString(currentFrequents));
             totalFrequents += currentFrequents.length;
             if (currentFrequents.length == 0) converged = true;
             else {
-                HashTree currentFrequentsTree = HashTree.build(currentFrequents);
-                Broadcast<HashTree> broadcastTree = sparkContext.broadcast(currentFrequentsTree);
-                if (k == 1 || currentFrequentsTree.numItemsets < previousFrequent.getValue().numItemsets) {
+                if (k == 1 || currentFrequents.length < previousFrequent.length) {
                     System.out.println("Updating Input RDD...");
-                    InputRDDUpdater.updateInputRDD(this, broadcastTree, k, sparkContext.broadcast(singletonOrder));
+                    InputRDDUpdater.updateInputRDD(this,
+                            currentFrequents,
+                            k,
+                            sparkContext.broadcast(singletonOrder),
+                            sparkContext);
                 }
-                previousFrequent = broadcastTree;
+                previousFrequent = currentFrequents;
                 k++;
             }
             System.out.println("Finished mining " + (k-1) + " itemsets.");
