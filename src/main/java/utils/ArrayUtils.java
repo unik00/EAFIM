@@ -2,10 +2,9 @@ package utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class ArrayUtils {
-    public static int[] listToPrimitiveArray(List<Integer> in){
+    public static int[] arrayListToPrimitiveArray(ArrayList<Integer> in){
         if (in == null) return new int[0];
 
         int[] result = new int[in.size()];

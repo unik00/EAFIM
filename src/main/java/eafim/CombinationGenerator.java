@@ -1,5 +1,7 @@
 package eafim;
 
+import utils.ArrayUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -16,6 +18,10 @@ public class CombinationGenerator {
                                   HashTree tree,
                                   HashTree.Node u){
         if (j == current.length) {
+            //System.out.println("current: " + Arrays.toString(current));
+            //System.out.println("trans: " + Arrays.toString(transaction));
+            //System.out.println("original itemsets: " + Arrays.deepToString(tree.originalItemsets));
+
             // now we search in u bucket to see if current matches one of the candidates in its bucket
             for(int t = 0; t < u.bucketOfIndexes.size(); t++){
                 int[] c = tree.originalItemsets[u.bucketOfIndexes.get(t)];
@@ -48,10 +54,6 @@ public class CombinationGenerator {
         if (transaction.length < k) return new int[0];
         ArrayList<Integer> result = new ArrayList<>();
         backtrack(result, transaction, 0, new int[k], 0, candidateTree, candidateTree.root);
-        int[] resultArray = new int[result.size()];
-        for (int i = 0; i < result.size(); i++) {
-            resultArray[i] = result.get(i);
-        }
-        return resultArray;
+        return ArrayUtils.arrayListToPrimitiveArray(result);
     }
 }

@@ -11,8 +11,10 @@ import java.util.Iterator;
 import static utils.ArrayUtils.integerToPrimitive;
 
 public class InputRDDUpdater {
-    private static int ascendingSupport(Integer a, Integer b, Broadcast<HashMap<Integer, Integer>> order){
-        return order.value().get(a).compareTo(order.value().get(b));
+    public static int ascendingSupport(Integer a, Integer b, HashMap<Integer, Integer> order){
+        int tmp = order.get(a).compareTo(order.get(b));
+        if (tmp != 0) return tmp;
+        else return a.compareTo(b);
     }
 
     private static int[] gen(int[] trans,
@@ -33,7 +35,8 @@ public class InputRDDUpdater {
         Integer[] result = new Integer[resultSet.size()];
         int i = 0;
         while (it.hasNext()) result[i++] = it.next();
-        Arrays.sort(result, (x, y) -> ascendingSupport(x, y, singletonOrder));
+        Arrays.sort(result, (x, y) -> ascendingSupport(x, y, singletonOrder.getValue()));
+        //System.out.println("input rdd updater: " + Arrays.toString(result));
         return integerToPrimitive(result);
     }
 
