@@ -6,7 +6,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static java.lang.Math.*;
 import static utils.ArrayUtils.primitiveArrayToArrayList;
 
 public class HashTree implements Serializable {
@@ -20,12 +19,11 @@ public class HashTree implements Serializable {
             this.numChildren = numChildren;
         }
     }
-    public static int MAX_DEPTH = 150;
     public int numItemsets;
     private int hashCode = 100;
     public Node root = new Node(100);
 
-    private int hash(int x){
+    public int hash(int x){
         return x % hashCode;
     }
 
@@ -45,7 +43,7 @@ public class HashTree implements Serializable {
     }
 
     public void insert(Node u, int[] c, int i, boolean aggregate){
-        if (i == c.length || i == MAX_DEPTH - 1) {
+        if (i == c.length) {
             if (u.bucket == null) u.bucket = new ArrayList<>();
             if (!aggregate) u.bucket.add(c);
             else {
@@ -71,7 +69,7 @@ public class HashTree implements Serializable {
     }
 
     public boolean find(Node u, int[] c, int i){
-        if (i == c.length || i == MAX_DEPTH - 1) {
+        if (i == c.length) {
             for(int[] t: u.bucket){
                 if (Arrays.equals(t, c)) return true;
             }

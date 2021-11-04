@@ -1,16 +1,18 @@
 package eafim;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class CombinationGenerator {
-    /** Previous frequent item-sets can be passed for early pruning */
-    private static void backtrack(ArrayList<int[]> result,
+    /**
+     * Generate all combinations of length k that is present in candidateTree
+     */
+    private static void backtrack(ArrayList<Integer> result,
                                   int[] transaction,
                                   int i,
                                   int[] current,
                                   int j,
-                                  HashTree... previousFrequent){
+                                  HashTree tree,
+                                  HashTree.Node u){
         if (j == current.length) {
             result.add(current.clone());
             return;
@@ -18,27 +20,26 @@ public class CombinationGenerator {
 
         current[j] = transaction[i];
 
-        if (previousFrequent.length == 0 ||
-                current.length < 2 ||
-                j < current.length - 2 ||
-                previousFrequent[0].contains(Arrays.copyOf(current, current.length - 1))) {
-            // pick current[j]
-
-            backtrack(result, transaction, i + 1, current, j + 1, previousFrequent);
+        // pick current[j]
+        if (u.childrenArray != null && u.childrenArray[tree.hash(current[j])] != null) {
+            backtrack(result, transaction, i + 1, current, j + 1, tree, u.childrenArray[tree.hash(current[j])]);
         }
 
         // not pick current[j]
         if (current.length - j < transaction.length - i) {
-            backtrack(result, transaction, i + 1, current, j, previousFrequent);
+            backtrack(result, transaction, i + 1, current, j, tree, u);
         }
     }
 
-    /** Generate combinations of length k */
-    public static int[][] generate(int[] transaction, int k, HashTree... previousFrequent){
-        if (transaction.length < k) return new int[0][];
-        ArrayList<int[]> result = new ArrayList<>();
-        backtrack(result, transaction, 0, new int[k], 0, previousFrequent);
-        int[][] resultArray = new int[result.size()][];
+    /**
+     * Generate combinations of length k.
+     * This only returns indexes of itemsets in the original itemsets which built the candidateTree.
+     */
+    public static int[] generate(int[] transaction, int k, HashTree candidateTree){
+        if (transaction.length < k) return new int[0];
+        ArrayList<Integer> result = new ArrayList<>();
+        backtrack(result, transaction, 0, new int[k], 0, candidateTree, candidateTree.root);
+        int[] resultArray = new int[result.size()];
         for (int i = 0; i < result.size(); i++) {
             resultArray[i] = result.get(i);
         }
