@@ -48,7 +48,7 @@ public class Miner {
         Arrays.sort(previousFrequent, (x, y) -> InputRDDUpdater.ascendingSupport(x[0], y[0], singletonOrder));
 
         totalFrequents += previousFrequent.length;
-        System.out.println(Arrays.deepToString(previousFrequent));
+        //System.out.println(Arrays.deepToString(previousFrequent));
 
         InputRDDUpdater.updateInputRDD(this,
                 previousFrequent,
@@ -64,7 +64,7 @@ public class Miner {
             System.out.println("Finding frequents...");
             int[][] currentFrequents = FrequentFinder.findFrequents(inputRdd, previousFrequent, k, minSup);
             System.out.println(currentFrequents.length + " frequent itemsets.");
-            System.out.println(Arrays.deepToString(currentFrequents));
+            //System.out.println(Arrays.deepToString(currentFrequents));
             totalFrequents += currentFrequents.length;
             if (currentFrequents.length == 0) converged = true;
             else {
