@@ -4,7 +4,6 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import utils.ArrayUtils;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class Miner {
@@ -40,7 +39,7 @@ public class Miner {
             totalFrequents += currentFrequents.length;
             if (currentFrequents.length == 0) converged = true;
             else {
-                if (k == 1 /*|| currentFrequents.length < previousFrequent.length*/) {
+                if (k == 1 || currentFrequents.length < previousFrequent.length) {
                     System.out.println("Updating Input RDD...");
                     InputRDDUpdater.updateInputRDD(this,
                             currentFrequents,

@@ -17,7 +17,7 @@ public class InputRDDUpdater {
         else return a.compareTo(b);
     }
 
-    private static int[] gen(int[] trans,
+    private static int[] genForFirstIteration(int[] trans,
                              Broadcast<int[][]> currentFrequentsBC,
                              Broadcast<HashTree> frequentsTree,
                              int k,
@@ -26,8 +26,8 @@ public class InputRDDUpdater {
         int[] indexes = CombinationGenerator.generate(trans, k, frequentsTree.getValue());
 
         int[][] currentFrequents = currentFrequentsBC.getValue();
-        for(int i: indexes){
-            for(int item: currentFrequents[i]) {
+        for (int i : indexes) {
+            for (int item : currentFrequents[i]) {
                 resultSet.add(item);
             }
         }
@@ -40,6 +40,15 @@ public class InputRDDUpdater {
         return integerToPrimitive(result);
     }
 
+    private static int[] gen(int[] trans, Broadcast<HashSet<Integer>> frequentSingletons){
+        // From second iterations, we don't need to sort them again because they are already sorted
+        int j = 0;
+        for(int i = 0; i < trans.length; i++){
+            if (frequentSingletons.value().contains(trans[i])) trans[j++] = trans[i];
+        }
+        return Arrays.copyOf(trans, j);
+    }
+
     public static void updateInputRDD(Miner miner,
                                       int[][] currentFrequents,
                                       int k,
@@ -47,11 +56,25 @@ public class InputRDDUpdater {
                                       JavaSparkContext sparkContext){
         Broadcast<HashTree> frequentsTree = sparkContext.broadcast(HashTree.build(currentFrequents));
         Broadcast<int[][]> currentFrequentsBC = sparkContext.broadcast(currentFrequents);
+        HashSet<Integer> frequentSingletons = new HashSet<>();
+        for (int[] currentFrequent : currentFrequents) {
+            for (int f : currentFrequent) {
+                frequentSingletons.add(f);
+            }
+        }
+
         miner.inputRdd.unpersist();
-        miner.inputRdd = miner.inputRdd.map(trans -> gen(trans,
-                currentFrequentsBC,
-                frequentsTree,
-                k,
-                singletonOrder)).cache();
+
+        if (k == 1) {
+            miner.inputRdd = miner.inputRdd.map(trans -> genForFirstIteration(trans,
+                    currentFrequentsBC,
+                    frequentsTree,
+                    k,
+                    singletonOrder)).cache();
+        }
+        else {
+            Broadcast<HashSet<Integer>> frequentSingletonsBC = sparkContext.broadcast(frequentSingletons);
+            miner.inputRdd = miner.inputRdd.map(trans -> gen(trans, frequentSingletonsBC)).cache();
+        }
     }
 }
