@@ -47,6 +47,7 @@ public class InputRDDUpdater {
                                       JavaSparkContext sparkContext){
         Broadcast<HashTree> frequentsTree = sparkContext.broadcast(HashTree.build(currentFrequents));
         Broadcast<int[][]> currentFrequentsBC = sparkContext.broadcast(currentFrequents);
+        miner.inputRdd.unpersist();
         miner.inputRdd = miner.inputRdd.map(trans -> gen(trans,
                 currentFrequentsBC,
                 frequentsTree,

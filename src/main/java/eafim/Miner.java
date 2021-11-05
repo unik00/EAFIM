@@ -20,7 +20,7 @@ public class Miner {
     }
 
     public int run(){
-        JavaRDD<String> rawTrans = sparkContext.textFile(inputName, 1).cache();
+        JavaRDD<String> rawTrans = sparkContext.textFile(inputName, 60).cache();
         inputRdd = rawTrans.map(ArrayUtils::stringToSortedArray).cache();
 
         int k = 1;
@@ -40,7 +40,7 @@ public class Miner {
             totalFrequents += currentFrequents.length;
             if (currentFrequents.length == 0) converged = true;
             else {
-                if (k == 1 || currentFrequents.length < previousFrequent.length) {
+                if (k == 1 /*|| currentFrequents.length < previousFrequent.length*/) {
                     System.out.println("Updating Input RDD...");
                     InputRDDUpdater.updateInputRDD(this,
                             currentFrequents,

@@ -14,7 +14,7 @@ public class HashTree implements Serializable {
     }
     public int[][] originalItemsets;
     public int numItemsets;
-    private final int hashCode = 100;
+    private final int hashCode = 15;
     public Node root = new Node(hashCode);
 
     public int hash(int x){
