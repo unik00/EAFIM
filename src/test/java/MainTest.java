@@ -37,7 +37,7 @@ public class MainTest {
     public void testMushroom(){
         int[] inputs = new int[]{2500, 2600};
         int[] outputs = new int[]{2365, 1951};
-        test(inputs, outputs, "datasets/mushroom.dat", 0);
+        test(inputs, outputs, "datasets/mushroom.dat", 1);
     }
 
     @Test
@@ -47,13 +47,10 @@ public class MainTest {
         test(inputs, outputs, "datasets/small.txt");
     }
 
-    /*
-    TODO: increase stack size (Stack overflow)
-    @Test
+//    @Test
     public void testWebdocs(){
-        int[] inputs = new int[]{400000};
-        int[] outputs = new int[]{2365};
+        int[] inputs = new int[]{500000};
+        int[] outputs = new int[]{186};
         test(inputs, outputs, "datasets/webdocs.dat");
     }
-     */
 }

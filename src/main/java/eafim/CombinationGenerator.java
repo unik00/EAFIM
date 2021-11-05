@@ -18,9 +18,9 @@ public class CombinationGenerator {
                                   HashTree tree,
                                   HashTree.Node u){
         if (j == current.length) {
-            //System.out.println("current: " + Arrays.toString(current));
-            //System.out.println("trans: " + Arrays.toString(transaction));
-            //System.out.println("original itemsets: " + Arrays.deepToString(tree.originalItemsets));
+//            System.out.println("current: " + Arrays.toString(current));
+//            System.out.println("trans: " + Arrays.toString(transaction));
+//            System.out.println("original itemsets: " + Arrays.deepToString(tree.originalItemsets));
 
             // now we search in u bucket to see if current matches one of the candidates in its bucket
             for(int t = 0; t < u.bucketOfIndexes.size(); t++){
